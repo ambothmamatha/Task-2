@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stopwatch Web Application</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(135deg, #0a0f1d, #1e2a47);
+      color: #fff;
+      margin: 0;
+    }
+
+    .container {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      width: 350px;
+    }
+
+    h1 {
+      margin-bottom: 1rem;
+      font-size: 1.8rem;
+      letter-spacing: 1px;
+    }
+
+    #display {
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+      letter-spacing: 2px;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    button {
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      color: #fff;
+      transition: background 0.3s ease;
+    }
+
+    #startBtn { background: #28a745; }
+    #pauseBtn { background: #ffc107; color: #000; }
+    #resetBtn { background: #dc3545; }
+    #lapBtn { background: #007bff; }
+
+    button:hover {
+      opacity: 0.85;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    li {
+      background: rgba(255, 255, 255, 0.1);
+      margin: 5px 0;
+      padding: 6px;
+      border-radius: 5px;
+      font-size: 0.95rem;
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #555;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Stopwatch</h1>
+    <div id="display">00:00:00.00</div>
+
+    <div class="buttons">
+      <button id="startBtn">Start</button>
+      <button id="pauseBtn">Pause</button>
+      <button id="resetBtn">Reset</button>
+      <button id="lapBtn">Lap</button>
+    </div>
+
+    <ul id="laps"></ul>
+  </div>
+
+  <script>
+    let startTime = 0;
+    let updatedTime = 0;
+    let difference = 0;
+    let tInterval;
+    let running = false;
+    const display = document.getElementById("display");
+    const laps = document.getElementById("laps");
+
+    document.getElementById("startBtn").onclick = function() {
+      if (!running) {
+        startTime = new Date().getTime() - difference;
+        tInterval = setInterval(getShowTime, 10);
+        running = true;
+      }
+    };
+
+    document.getElementById("pauseBtn").onclick = function() {
+      if (running) {
+        clearInterval(tInterval);
+        difference = new Date().getTime() - startTime;
+        running = false;
+      }
+    };
+
+    document.getElementById("resetBtn").onclick = function() {
+      clearInterval(tInterval);
+      running = false;
+      difference = 0;
+      display.innerHTML = "00:00:00.00";
+      laps.innerHTML = "";
+    };
+
+    document.getElementById("lapBtn").onclick = function() {
+      if (running) {
+        const li = document.createElement("li");
+        li.textContent = display.textContent;
+        laps.prepend(li);
+      }
+    };
+
+    function getShowTime() {
+      updatedTime = new Date().getTime() - startTime;
+
+      let hours = Math.floor(updatedTime / (1000 * 60 * 60));
+      let minutes = Math.floor((updatedTime % (1000 * 60 * 60)) / (1000 * 60));
+      let seconds = Math.floor((updatedTime % (1000 * 60)) / 1000);
+      let milliseconds = Math.floor((updatedTime % 1000) / 10);
+
+      display.innerHTML =
+        (hours < 10 ? "0" + hours : hours) + ":" +
+        (minutes < 10 ? "0" + minutes : minutes) + ":" +
+        (seconds < 10 ? "0" + seconds : seconds) + "." +
+        (milliseconds < 10 ? "0" + milliseconds : milliseconds);
+    }
+  </script>
+</body>
+</html>
